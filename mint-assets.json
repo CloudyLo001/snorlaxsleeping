@@ -1,0 +1,126 @@
+{
+  "registryVersion": 1,
+  "assetRoot": "public/assets/mint",
+  "assets": {
+    "meadow": {
+      "source": {
+        "manifestVersion": 1,
+        "kind": "asset",
+        "assetType": "world",
+        "assetId": "j9765h8q9aqd4g0tnr49wsj6cn8bfbnh"
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "mode": "remote_stream",
+      "runtime": {
+        "artifactId": "world_runtime_rad",
+        "role": "environment",
+        "format": "rad",
+        "runtimeUrl": "https://cdn.mint.gg/rad/pastel-anime-meadow-1a3afe2b4c345113-lod.rad",
+        "renderer": "@sparkjsdev/spark",
+        "loaderHint": {
+          "renderer": "SparkRenderer",
+          "mesh": "SplatMesh",
+          "paged": true,
+          "lod": false
+        },
+        "collider": {
+          "artifactId": "world_collider",
+          "role": "physics_collider",
+          "format": "glb",
+          "runtimeUrl": "https://cdn.mint.gg/worlds/pastel-anime-meadow-collider-9539c894b8ff3da4.glb",
+          "loaderHint": "gltf",
+          "visible": false,
+          "requiredForPhysics": true
+        },
+        "byteSize": 36491208
+      },
+      "artifacts": {
+        "preview_image": {
+          "artifactId": "preview_image",
+          "role": "preview_image",
+          "format": "webp",
+          "contentType": "image/webp",
+          "filename": "pastel-anime-meadow-cn8bfbnh-preview.webp",
+          "localPath": "public/assets/mint/meadow/preview_image.webp",
+          "loaderHint": "image",
+          "byteSize": 32606
+        }
+      },
+      "thumbnailUrl": "public/assets/mint/meadow/preview_image.webp"
+    },
+    "snorlax": {
+      "source": {
+        "manifestVersion": 1,
+        "kind": "asset",
+        "assetType": "model",
+        "assetId": "ks7f8zkwg8711m3aav1zq6730s8bem2m"
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "mode": "local_files",
+      "artifacts": {
+        "original_glb": {
+          "artifactId": "original_glb",
+          "role": "canonical_model",
+          "format": "glb",
+          "contentType": "model/gltf-binary",
+          "filename": "pastel-belly-snorlax-0s8bem2m-original.glb",
+          "localPath": "public/assets/mint/snorlax/original_glb.glb",
+          "loaderHint": "gltf",
+          "byteSize": 580380,
+          "extensionsUsed": [],
+          "extensionsRequired": [],
+          "usesDraco": false,
+          "requiresDraco": false,
+          "usesMeshopt": false,
+          "requiresMeshopt": false,
+          "usesKtx2": false,
+          "requiresKtx2": false,
+          "unknownRequiredExtensions": []
+        },
+        "preview_image": {
+          "artifactId": "preview_image",
+          "role": "preview_image",
+          "format": "webp",
+          "contentType": "image/webp",
+          "filename": "pastel-belly-snorlax-0s8bem2m-preview.webp",
+          "localPath": "public/assets/mint/snorlax/preview_image.webp",
+          "loaderHint": "image",
+          "byteSize": 38126
+        }
+      },
+      "thumbnailUrl": "public/assets/mint/snorlax/preview_image.webp"
+    }
+  }
+}
