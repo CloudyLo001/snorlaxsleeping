@@ -7,7 +7,7 @@
         "manifestVersion": 1,
         "kind": "asset",
         "assetType": "world",
-        "assetId": "j9765h8q9aqd4g0tnr49wsj6cn8bfbnh"
+        "assetId": "j97b93pe688pw79my051qfpr7s8bfrpx"
       },
       "transform": {
         "position": [
@@ -31,7 +31,7 @@
         "artifactId": "world_runtime_rad",
         "role": "environment",
         "format": "rad",
-        "runtimeUrl": "https://cdn.mint.gg/rad/pastel-anime-meadow-1a3afe2b4c345113-lod.rad",
+        "runtimeUrl": "https://cdn.mint.gg/rad/open-grassland-clearing-83f2812d52c9fe3b-lod.rad",
         "renderer": "@sparkjsdev/spark",
         "loaderHint": {
           "renderer": "SparkRenderer",
@@ -43,12 +43,12 @@
           "artifactId": "world_collider",
           "role": "physics_collider",
           "format": "glb",
-          "runtimeUrl": "https://cdn.mint.gg/worlds/pastel-anime-meadow-collider-9539c894b8ff3da4.glb",
+          "runtimeUrl": "https://cdn.mint.gg/worlds/open-grassland-clearing-collider-f499e7f7889e4161.glb",
           "loaderHint": "gltf",
           "visible": false,
           "requiredForPhysics": true
         },
-        "byteSize": 36491208
+        "byteSize": 35929880
       },
       "artifacts": {
         "preview_image": {
@@ -56,10 +56,10 @@
           "role": "preview_image",
           "format": "webp",
           "contentType": "image/webp",
-          "filename": "pastel-anime-meadow-cn8bfbnh-preview.webp",
+          "filename": "open-anime-grassland-7s8bfrpx-preview.webp",
           "localPath": "public/assets/mint/meadow/preview_image.webp",
           "loaderHint": "image",
-          "byteSize": 32606
+          "byteSize": 14030
         }
       },
       "thumbnailUrl": "public/assets/mint/meadow/preview_image.webp"

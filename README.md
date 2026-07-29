@@ -11,8 +11,8 @@ A calm, interactive 3D scene: Snorlax naps in a sunny meadow, and you can poke h
   Poking slowly never wakes him; the meter drains faster than it fills.
 - **Snore bubble** — grows out of his mouth on the exhale, trembles as he gets
   annoyed, and pops when he wakes.
-- **Look around** — drag to orbit, scroll to zoom, WASD to wander (Shift to
-  hurry).
+- **Look around** — drag to orbit, scroll to zoom. The camera stays locked on
+  Snorlax; panning is disabled so he is always centred.
 
 ## Running it
 
@@ -45,7 +45,7 @@ ground by amounts that vary per pose, `replantOnGround` re-measures his true
 lowest point every frame and plants it on the ground rather than relying on
 fixed offsets.
 
-The meadow is a Gaussian-splat world streamed through SparkJS. Splats cannot
+The grassland is a Gaussian-splat world streamed through SparkJS. Splats cannot
 receive shadows, so a soft painted contact shadow keeps Snorlax visually planted.
 
 ## Assets
@@ -55,9 +55,9 @@ Generated with [Mint](https://mint.gg) and tracked in `mint-assets.json`.
 | Asset | Registry key | Source |
 | --- | --- | --- |
 | Pastel Belly Snorlax | `snorlax` | [Mint chat](https://mint.gg/chat/ph7epk8xbemdear33wjn9g1kx18bfpdj) |
-| Pastel Anime Meadow | `meadow` | [Mint chat](https://mint.gg/chat/ph73gnsgmmmts415wmexxy97t98bfj8t) |
+| Open Anime Grassland | `meadow` | [Mint chat](https://mint.gg/chat/ph763yqqt7h8hj0gsmdg9c0y158bec8j) |
 
-The model is committed to the repo. The meadow is a `remote_stream` record —
+The model is committed to the repo. The grassland is a `remote_stream` record —
 its RAD splat and collider load from Mint's CDN at runtime and are not vendored.
 
 Snorlax is a Pokémon character owned by Nintendo / Creatures Inc. / GAME FREAK.

@@ -22,7 +22,7 @@ export function createUi(root: HTMLElement): Ui {
 
   const hint = document.createElement("div");
   hint.className = "hint-pill hidden";
-  hint.textContent = "Poke Snorlax 💤 · WASD to wander";
+  hint.textContent = "Poke Snorlax 💤";
 
   layer.append(status, meter, hint);
   root.append(layer);

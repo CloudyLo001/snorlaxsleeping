@@ -35,6 +35,9 @@ controls.dampingFactor = 0.07;
 controls.maxPolarAngle = Math.PI * 0.49;
 controls.autoRotate = true;
 controls.autoRotateSpeed = 0.2;
+// The camera orbits Snorlax and never leaves him: panning would slide the
+// target off him, so it stays off.
+controls.enablePan = false;
 
 // The splat world carries its own baked lighting; these lights shade only the
 // Snorlax mesh with a soft warm-sun feel.
@@ -73,7 +76,6 @@ let pokeSystem: PokeSystem | null = null;
 let shadow: THREE.Mesh | null = null;
 const groundImpact: GroundImpact = createGroundImpact(scene);
 let loadFailed = false;
-let moveSpeed = 8;
 let groundY = 0;
 
 function fail(message: string, error: unknown) {
@@ -116,7 +118,6 @@ async function addSnorlax() {
     camera.position.set(0, groundY + loaded.sitHeight * 0.5, loaded.sitHeight * 2.0);
     controls.minDistance = loaded.sitHeight * 0.75;
     controls.maxDistance = loaded.sitHeight * 4.5;
-    moveSpeed = loaded.sitHeight * 1.1;
 
     if (!loadFailed) {
       ui.clearStatus();
@@ -141,43 +142,9 @@ async function loadScene() {
 
 void loadScene();
 
-// WASD navigation (desktop splat-world default). Shift moves faster.
-const pressedKeys = new Set<string>();
-window.addEventListener("keydown", (event) => {
-  const target = event.target as HTMLElement | null;
-  if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) return;
-  pressedKeys.add(event.code);
-  controls.autoRotate = false;
-});
-window.addEventListener("keyup", (event) => pressedKeys.delete(event.code));
-window.addEventListener("blur", () => pressedKeys.clear());
 renderer.domElement.addEventListener("pointerdown", () => {
   controls.autoRotate = false;
 });
-
-const moveForward = new THREE.Vector3();
-const moveRight = new THREE.Vector3();
-const moveDelta = new THREE.Vector3();
-
-function applyWasd(dt: number) {
-  if (pressedKeys.size === 0) return;
-  const speed = pressedKeys.has("ShiftLeft") || pressedKeys.has("ShiftRight") ? moveSpeed * 2.5 : moveSpeed;
-  camera.getWorldDirection(moveForward);
-  moveForward.y = 0;
-  if (moveForward.lengthSq() < 1e-6) return;
-  moveForward.normalize();
-  moveRight.crossVectors(moveForward, THREE.Object3D.DEFAULT_UP).normalize();
-  moveDelta.set(0, 0, 0);
-  if (pressedKeys.has("KeyW")) moveDelta.add(moveForward);
-  if (pressedKeys.has("KeyS")) moveDelta.sub(moveForward);
-  if (pressedKeys.has("KeyD")) moveDelta.add(moveRight);
-  if (pressedKeys.has("KeyA")) moveDelta.sub(moveRight);
-  if (moveDelta.lengthSq() === 0) return;
-  moveDelta.normalize().multiplyScalar(speed * dt);
-  // Apply to both camera and target so OrbitControls does not snap back.
-  camera.position.add(moveDelta);
-  controls.target.add(moveDelta);
-}
 
 window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -191,7 +158,6 @@ renderer.setAnimationLoop(() => {
   timer.update();
   const dt = Math.min(timer.getDelta(), 0.05);
 
-  applyWasd(dt);
   if (snorlax) {
     snorlax.update(dt);
     bubble?.update(dt, snorlax.breathPhase, snorlax.annoyance);
