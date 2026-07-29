@@ -48,6 +48,14 @@ fixed offsets.
 The grassland is a Gaussian-splat world streamed through SparkJS. Splats cannot
 receive shadows, so a soft painted contact shadow keeps Snorlax visually planted.
 
+Two details in `world.ts` matter. The shared splat-and-collider root is scaled
+well past Mint's default calibration, because that default assumes a camera
+about 6 units out; Snorlax is 13.6 units wide, so the camera has to sit ~23
+units back, and near the edge of a captured region splats stretch into smeared
+artifacts. Scaling the root moves that edge outward so the camera sits at ~40%
+of the captured ground radius. The world then slides itself so its flattest
+patch ends up under the origin, since Snorlax always lies there.
+
 ## Assets
 
 Generated with [Mint](https://mint.gg) and tracked in `mint-assets.json`.
@@ -55,7 +63,7 @@ Generated with [Mint](https://mint.gg) and tracked in `mint-assets.json`.
 | Asset | Registry key | Source |
 | --- | --- | --- |
 | Pastel Belly Snorlax | `snorlax` | [Mint chat](https://mint.gg/chat/ph7epk8xbemdear33wjn9g1kx18bfpdj) |
-| Open Anime Grassland | `meadow` | [Mint chat](https://mint.gg/chat/ph763yqqt7h8hj0gsmdg9c0y158bec8j) |
+| Open Grassland Horizon | `meadow` | [Mint chat](https://mint.gg/chat/ph7860z21kqbptsy6mx9gjg3wh8be1r7) |
 
 The model is committed to the repo. The grassland is a `remote_stream` record —
 its RAD splat and collider load from Mint's CDN at runtime and are not vendored.

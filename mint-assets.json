@@ -7,7 +7,7 @@
         "manifestVersion": 1,
         "kind": "asset",
         "assetType": "world",
-        "assetId": "j97b93pe688pw79my051qfpr7s8bfrpx"
+        "assetId": "j975gt70b21yc1wk8mhkmhrhx18bfh38"
       },
       "transform": {
         "position": [
@@ -31,7 +31,7 @@
         "artifactId": "world_runtime_rad",
         "role": "environment",
         "format": "rad",
-        "runtimeUrl": "https://cdn.mint.gg/rad/open-grassland-clearing-83f2812d52c9fe3b-lod.rad",
+        "runtimeUrl": "https://cdn.mint.gg/rad/anime-grassland-horizon-fd50404914190122-lod.rad",
         "renderer": "@sparkjsdev/spark",
         "loaderHint": {
           "renderer": "SparkRenderer",
@@ -43,12 +43,12 @@
           "artifactId": "world_collider",
           "role": "physics_collider",
           "format": "glb",
-          "runtimeUrl": "https://cdn.mint.gg/worlds/open-grassland-clearing-collider-f499e7f7889e4161.glb",
+          "runtimeUrl": "https://cdn.mint.gg/worlds/anime-grassland-horizon-collider-9d4019e32fcbbb42.glb",
           "loaderHint": "gltf",
           "visible": false,
           "requiredForPhysics": true
         },
-        "byteSize": 35929880
+        "byteSize": 31002584
       },
       "artifacts": {
         "preview_image": {
@@ -56,10 +56,10 @@
           "role": "preview_image",
           "format": "webp",
           "contentType": "image/webp",
-          "filename": "open-anime-grassland-7s8bfrpx-preview.webp",
+          "filename": "open-grassland-horizon-x18bfh38-preview.webp",
           "localPath": "public/assets/mint/meadow/preview_image.webp",
           "loaderHint": "image",
-          "byteSize": 14030
+          "byteSize": 33872
         }
       },
       "thumbnailUrl": "public/assets/mint/meadow/preview_image.webp"
