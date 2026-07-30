@@ -6,9 +6,11 @@ import { createSnoreBubble, type SnoreBubble } from "./scene/snoreBubble";
 import { createGroundImpact, type GroundImpact } from "./scene/groundImpact";
 import { createPokeSystem, type PokeSystem } from "./interaction/poke";
 import { DEFAULT_GROWTH, type GrowthSettings } from "./scene/growth";
+import { createAudio } from "./audio";
 import { createUi } from "./ui";
 
 const GROWTH_STORAGE_KEY = "snorlax-growth-settings";
+const MUTE_STORAGE_KEY = "snorlax-muted";
 
 const app = document.querySelector<HTMLDivElement>("#app")!;
 
@@ -31,6 +33,15 @@ function loadGrowthSettings(): GrowthSettings {
 
 let growthSettings = loadGrowthSettings();
 
+let startMuted = false;
+try {
+  startMuted = localStorage.getItem(MUTE_STORAGE_KEY) === "true";
+} catch {
+  startMuted = false;
+}
+
+const audio = createAudio({ muted: startMuted });
+
 const ui = createUi(document.body, {
   growth: growthSettings,
   onGrowthChange: (settings) => {
@@ -38,6 +49,17 @@ const ui = createUi(document.body, {
     snorlax?.setGrowthSettings(settings);
     try {
       localStorage.setItem(GROWTH_STORAGE_KEY, JSON.stringify(settings));
+    } catch {
+      // Not remembering the choice is not worth failing over.
+    }
+  },
+  muted: startMuted,
+  onMuteChange: (muted) => {
+    // Clicking the button is itself the gesture browsers want.
+    audio.unlock();
+    audio.setMuted(muted);
+    try {
+      localStorage.setItem(MUTE_STORAGE_KEY, String(muted));
     } catch {
       // Not remembering the choice is not worth failing over.
     }
@@ -120,9 +142,14 @@ async function addSnorlax() {
     snorlax = loaded;
     loaded.setGrowthSettings(growthSettings);
     bubble = createSnoreBubble(loaded.bubbleAnchor, { size: loaded.sitHeight * 0.16 });
-    loaded.onWake = () => bubble?.pop();
-    loaded.onImpact = () =>
+    loaded.onWake = () => {
+      if (bubble?.pop()) audio.playPop();
+    };
+    loaded.onImpact = () => {
       groundImpact.burst(new THREE.Vector3(0, groundY + 0.05, 0), loaded.restFootprint.width * 0.75);
+      // The bigger he is, the slower and deeper he lands.
+      audio.playThud(1 / Math.pow(loaded.growth, 0.3));
+    };
     pokeSystem = createPokeSystem({
       dom: renderer.domElement,
       camera,
@@ -148,6 +175,8 @@ void addSnorlax();
 
 renderer.domElement.addEventListener("pointerdown", () => {
   controls.autoRotate = false;
+  // Browsers will not start audio until the viewer interacts with the page.
+  audio.unlock();
 });
 
 window.addEventListener("resize", () => {
@@ -176,6 +205,19 @@ function followGrowth(model: Snorlax) {
   replantSnorlax(model);
 }
 
+/**
+ * He snores on some breaths, not every one — a snore on every exhale turns into
+ * a metronome. Only while actually asleep, and deeper the bigger he is.
+ */
+let previousBreath = 0;
+function maybeSnore(model: Snorlax) {
+  const phase = model.breathPhase;
+  const exhaled = previousBreath < 0.5 && phase >= 0.5;
+  previousBreath = phase;
+  if (!exhaled || model.isWaking) return;
+  if (Math.random() < 0.45) audio.playSnore(1 / Math.pow(model.growth, 0.25));
+}
+
 const timer = new THREE.Timer();
 
 renderer.setAnimationLoop(() => {
@@ -186,6 +228,7 @@ renderer.setAnimationLoop(() => {
   if (snorlax) {
     snorlax.update(dt);
     followGrowth(snorlax);
+    maybeSnore(snorlax);
     bubble?.update(dt, snorlax.breathPhase, snorlax.annoyance);
     ui.setAnnoyance(snorlax.annoyance);
     ui.setGrowth(snorlax.growth);

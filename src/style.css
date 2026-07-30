@@ -109,6 +109,12 @@ body {
   gap: 8px;
 }
 
+.settings-buttons {
+  display: flex;
+  gap: 8px;
+  align-self: flex-end;
+}
+
 .settings-toggle {
   width: 38px;
   height: 38px;

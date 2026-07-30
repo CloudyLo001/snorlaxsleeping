@@ -61,6 +61,8 @@ export function createUi(
   options: {
     growth: GrowthSettings;
     onGrowthChange(settings: GrowthSettings): void;
+    muted: boolean;
+    onMuteChange(muted: boolean): void;
   },
 ): Ui {
   const layer = document.createElement("div");
@@ -111,7 +113,28 @@ export function createUi(
   );
 
   toggle.addEventListener("click", () => panel.classList.toggle("hidden"));
-  settings.append(panel, toggle);
+
+  let muted = options.muted;
+  const sound = document.createElement("button");
+  sound.className = "settings-toggle";
+  sound.type = "button";
+  const paintSound = () => {
+    sound.textContent = muted ? "🔇" : "🔊";
+    const label = muted ? "Unmute sound" : "Mute sound";
+    sound.title = label;
+    sound.setAttribute("aria-label", label);
+  };
+  paintSound();
+  sound.addEventListener("click", () => {
+    muted = !muted;
+    paintSound();
+    options.onMuteChange(muted);
+  });
+
+  const buttons = document.createElement("div");
+  buttons.className = "settings-buttons";
+  buttons.append(sound, toggle);
+  settings.append(panel, buttons);
 
   root.append(layer, settings);
 

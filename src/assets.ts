@@ -20,6 +20,14 @@ const assets = registry.assets as unknown as Record<string, RegistryAsset>;
  */
 const CDN_MIRRORS: Record<string, string> = {
   "snorlax/original_glb": "https://cdn.mint.gg/glb/pastel-belly-snorlax-normalized-9df98b8349641215.glb",
+  "ambience/audio_file":
+    "https://cdn.mint.gg/audio/xd744zgkj0t37gj8k8kwsfxbqh8bhj79/serene-meadow-ambience-cf339f-cf6e7d4161b52b96.mp3",
+  "snore/audio_file":
+    "https://cdn.mint.gg/audio/xd728zeenv0465hc2vsak9n7sh8bgvc4/giant-creature-snore-f94251-493a73362d9efa8b.mp3",
+  "pop/audio_file":
+    "https://cdn.mint.gg/audio/xd7b1fa9xf5ggnfx3h5kjqvr0h8bh0h9/soft-bubble-pop-80e65a-f04a3c103cf2ced1.mp3",
+  "thud/audio_file":
+    "https://cdn.mint.gg/audio/xd705d1crs7fg3jx7gkmzb11m98bhez0/giant-soft-body-thud-66c866-63222748597bfe97.mp3",
 };
 
 /** Mirror for an artifact, or undefined when there is no remote copy. */

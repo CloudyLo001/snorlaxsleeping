@@ -17,6 +17,10 @@ A calm, interactive 3D scene: Snorlax naps in a sunny meadow, and you can poke h
   switches when the inflation plays and how it feels.
 - **Snore bubble** — grows out of his mouth on the exhale, trembles as he gets
   annoyed, and pops when he wakes.
+- **Sound** — a serene ambient bed with soft wind, occasional deep snoring on
+  his exhale, a pop when the bubble bursts and a heavy padded whump when he
+  lands. Both the snore and the thud pitch down as he grows. The speaker button
+  mutes everything, and the choice is remembered.
 - **Look around** — drag to orbit, scroll to zoom. The camera stays locked on
   Snorlax; panning is disabled so he is always centred.
 
@@ -84,12 +88,15 @@ Generated with [Mint](https://mint.gg) and tracked in `mint-assets.json`.
 | Asset | Registry key | Source |
 | --- | --- | --- |
 | Pastel Belly Snorlax | `snorlax` | [Mint chat](https://mint.gg/chat/ph7epk8xbemdear33wjn9g1kx18bfpdj) |
+| Serene Meadow Ambience | `ambience` | [Mint chat](https://mint.gg/chat/ph765xjgq39ndk9w97qkpnxzx98bg3y4) |
+| Giant Creature Snore | `snore` | [Mint chat](https://mint.gg/chat/ph7fg2hpdb8pkjgxxpv2g6r74x8bhr9w) |
+| Soft Bubble Pop | `pop` | [Mint chat](https://mint.gg/chat/ph73zfjeb682vwqsynge4d3a4s8bgmcz) |
+| Giant Soft Body Thud | `thud` | [Mint chat](https://mint.gg/chat/ph702rm8b2y8rvjpqvp3xsdech8bge1z) |
 
 The model is committed to the repo. The grassland is a `remote_stream` record —
 its RAD splat and collider load from Mint's CDN at runtime and are not vendored.
 
-The Snorlax model is the only generated asset. GitHub Pages serves the committed
-copy directly; the Vercel deployment ships source only, so it 404s there and
+GitHub Pages serves the committed copies directly; the Vercel deployment ships source only, so it 404s there and
 falls back to a durable Mint CDN mirror (see `CDN_MIRRORS` in `src/assets.ts`).
 
 Pages serves the site from `/snorlaxsleeping/` rather than a domain root, so

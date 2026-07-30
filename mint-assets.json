@@ -2,6 +2,123 @@
   "registryVersion": 1,
   "assetRoot": "public/assets/mint",
   "assets": {
+    "ambience": {
+      "source": {
+        "manifestVersion": 1,
+        "kind": "asset",
+        "assetType": "audio",
+        "assetId": "xd744zgkj0t37gj8k8kwsfxbqh8bhj79"
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "mode": "local_files",
+      "artifacts": {
+        "audio_file": {
+          "artifactId": "audio_file",
+          "role": "audio",
+          "format": "mp3",
+          "contentType": "audio/mpeg",
+          "filename": "Serene-Meadow-Ambience-cf339f.mp3",
+          "localPath": "public/assets/mint/ambience/audio_file.mp3",
+          "loaderHint": "audio",
+          "byteSize": 1094594,
+          "durationSeconds": 45
+        }
+      }
+    },
+    "pop": {
+      "source": {
+        "manifestVersion": 1,
+        "kind": "asset",
+        "assetType": "audio",
+        "assetId": "xd7b1fa9xf5ggnfx3h5kjqvr0h8bh0h9"
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "mode": "local_files",
+      "artifacts": {
+        "audio_file": {
+          "artifactId": "audio_file",
+          "role": "audio",
+          "format": "mp3",
+          "contentType": "audio/mpeg",
+          "filename": "Soft-Bubble-Pop-80e65a.mp3",
+          "localPath": "public/assets/mint/pop/audio_file.mp3",
+          "loaderHint": "audio",
+          "byteSize": 17180,
+          "durationSeconds": 1
+        }
+      }
+    },
+    "snore": {
+      "source": {
+        "manifestVersion": 1,
+        "kind": "asset",
+        "assetType": "audio",
+        "assetId": "xd728zeenv0465hc2vsak9n7sh8bgvc4"
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "mode": "local_files",
+      "artifacts": {
+        "audio_file": {
+          "artifactId": "audio_file",
+          "role": "audio",
+          "format": "mp3",
+          "contentType": "audio/mpeg",
+          "filename": "Giant-Creature-Snore-f94251.mp3",
+          "localPath": "public/assets/mint/snore/audio_file.mp3",
+          "loaderHint": "audio",
+          "byteSize": 65245,
+          "durationSeconds": 4
+        }
+      }
+    },
     "snorlax": {
       "source": {
         "manifestVersion": 1,
@@ -59,6 +176,45 @@
         }
       },
       "thumbnailUrl": "public/assets/mint/snorlax/preview_image.webp"
+    },
+    "thud": {
+      "source": {
+        "manifestVersion": 1,
+        "kind": "asset",
+        "assetType": "audio",
+        "assetId": "xd705d1crs7fg3jx7gkmzb11m98bhez0"
+      },
+      "transform": {
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ],
+        "scale": [
+          1,
+          1,
+          1
+        ]
+      },
+      "mode": "local_files",
+      "artifacts": {
+        "audio_file": {
+          "artifactId": "audio_file",
+          "role": "audio",
+          "format": "mp3",
+          "contentType": "audio/mpeg",
+          "filename": "Giant-Soft-Body-Thud-66c866.mp3",
+          "localPath": "public/assets/mint/thud/audio_file.mp3",
+          "loaderHint": "audio",
+          "byteSize": 48945,
+          "durationSeconds": 3
+        }
+      }
     }
   }
 }
