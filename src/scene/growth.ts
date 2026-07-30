@@ -32,14 +32,28 @@ export const GROWTH_FEEL_OPTIONS: { id: GrowthFeel; label: string; blurb: string
   { id: "pumps", label: "Pumps", blurb: "Three visible pushes, like breaths being blown in." },
 ];
 
+/** The wake phase times, passed in so this never drifts from the animation. */
+export interface WakeTimeline {
+  riseStart: number;
+  riseEnd: number;
+  sitEnd: number;
+  fallEnd: number;
+  total: number;
+}
+
 /**
  * When the inflation plays within the wake sequence, in seconds from the start
- * of the wake. Both windows finish comfortably inside WAKE_TOTAL (6.1s).
+ * of the wake. Derived from the timeline rather than hardcoded, so retiming the
+ * wake cannot silently push the inflation past the end of it.
  */
-export function growthWindow(when: GrowthWhen): { start: number; duration: number } {
-  // "sitting" sits inside the upright pause (1.2s → 3.7s).
-  // "landing" starts on the impact (4.45s) and rides the settle.
-  return when === "sitting" ? { start: 1.6, duration: 1.3 } : { start: 4.45, duration: 1.2 };
+export function growthWindow(when: GrowthWhen, wake: WakeTimeline): { start: number; duration: number } {
+  if (when === "sitting") {
+    // Just after he settles upright, finishing before he drops back.
+    const start = wake.riseEnd + 0.4;
+    return { start, duration: Math.min(1.3, Math.max(0.6, wake.sitEnd - start - 0.3)) };
+  }
+  // On the impact, riding the settle that follows it.
+  return { start: wake.fallEnd, duration: Math.min(1.2, wake.total - wake.fallEnd - 0.3) };
 }
 
 const smoothstep = (t: number) => t * t * (3 - 2 * t);

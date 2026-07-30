@@ -21,7 +21,9 @@ const CLIPS: Record<ClipName, { assetKey: string; artifactId: string; gain: numb
   ambient: { assetKey: "ambience", artifactId: "audio_file", gain: 0.3 },
   snore: { assetKey: "snore", artifactId: "audio_file", gain: 0.42 },
   pop: { assetKey: "pop", artifactId: "audio_file", gain: 0.5 },
-  thud: { assetKey: "thud", artifactId: "audio_file", gain: 0.7 },
+  // Loudest by a wide margin: he is enormous and this is the one impact in the
+  // whole scene. Above 1 is fine — the master gain is the only thing after it.
+  thud: { assetKey: "thud", artifactId: "audio_file", gain: 1.8 },
 };
 
 /** Tries the committed copy, then the CDN mirror for source-only hosts. */
@@ -58,9 +60,20 @@ export function createAudio(options: { muted: boolean }): AudioKit {
   }
 
   const context = new AudioCtx();
+
+  // A limiter on the way out, so the thud can be genuinely loud without the
+  // sum hard-clipping against the destination when it lands over the ambience.
+  const limiter = context.createDynamicsCompressor();
+  limiter.threshold.value = -6;
+  limiter.knee.value = 6;
+  limiter.ratio.value = 12;
+  limiter.attack.value = 0.003;
+  limiter.release.value = 0.25;
+  limiter.connect(context.destination);
+
   const master = context.createGain();
   master.gain.value = muted ? 0 : 1;
-  master.connect(context.destination);
+  master.connect(limiter);
 
   const buffers = new Map<ClipName, AudioBuffer>();
   let unlocked = false;

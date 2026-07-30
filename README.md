@@ -8,9 +8,11 @@ A calm, interactive 3D scene: Snorlax naps in a sunny meadow, and you can poke h
   across his body, and he reacts: a twitch, a sleepy head shake, a foot kick, an
   arm swat, a tummy rub, or a full-body grumble. Reactions escalate the more you
   pester him, and a small meter shows how bothered he is.
-- **Wake him** — poke rapidly for about six seconds. He sits up, blinks around
-  groggily, rubs an eye, then flops back down with a dust burst and a leg kick.
-  Poking slowly never wakes him; the meter drains faster than it fills.
+- **Wake him** — poke rapidly for about six seconds. The snore bubble bursts
+  first and he lies still for a beat, then heaves upright, blinks around
+  groggily, rubs an eye, and flops back down with a heavy landing, a dust burst
+  and a leg kick. Poking slowly never wakes him; the meter drains faster than it
+  fills.
 - **He grows** — every waking leaves him permanently 20% bigger, with a visible
   balloon-like inflation, and he stays that size when he goes back to sleep.
   There is no cap. A refresh returns him to his original size. The gear button
@@ -18,7 +20,7 @@ A calm, interactive 3D scene: Snorlax naps in a sunny meadow, and you can poke h
 - **Snore bubble** — grows out of his mouth on the exhale, trembles as he gets
   annoyed, and pops when he wakes.
 - **Sound** — a serene ambient bed with soft wind, occasional deep snoring on
-  his exhale, a pop when the bubble bursts and a heavy padded whump when he
+  his exhale, a pop when the bubble bursts and a loud padded whump when he
   lands. Both the snore and the thud pitch down as he grows. The speaker button
   mutes everything, and the choice is remembered.
 - **Look around** — drag to orbit, scroll to zoom. The camera stays locked on

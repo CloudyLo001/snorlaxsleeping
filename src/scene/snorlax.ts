@@ -57,10 +57,25 @@ const ANNOY_PER_POKE = 0.055;
 const ANNOY_DECAY = 0.11;
 
 // Wake-up: heave up from lying, sit a while, flop back, land hard.
-const WAKE_RISE_END = 1.2;
-const WAKE_SIT_END = 3.7;
-const WAKE_FALL_END = 4.45;
-const WAKE_TOTAL = 6.1;
+/**
+ * The bubble bursts the instant the wake fires, so he holds still for a beat
+ * first — the pop reads as what wakes him, rather than landing on top of him
+ * already heaving upright.
+ */
+const WAKE_STIR_END = 0.5;
+const WAKE_RISE_END = 1.7;
+const WAKE_SIT_END = 4.2;
+const WAKE_FALL_END = 4.95;
+const WAKE_TOTAL = 6.6;
+
+/** Phase times handed to the growth window, so the two cannot drift apart. */
+const WAKE_TIMELINE = {
+  riseStart: WAKE_STIR_END,
+  riseEnd: WAKE_RISE_END,
+  sitEnd: WAKE_SIT_END,
+  fallEnd: WAKE_FALL_END,
+  total: WAKE_TOTAL,
+};
 /** Limb splay applied while he sleeps. */
 const SPRAWL_LEG = 1.15;
 const SPRAWL_ARM = 0.3;
@@ -369,8 +384,13 @@ export async function loadSnorlax(): Promise<Snorlax> {
   function applyWakeGestures(m: RigMotions) {
     if (wakeTime < 0) return;
     const t = wakeTime;
-    if (t < WAKE_RISE_END) {
-      const k = t / WAKE_RISE_END;
+    if (t < WAKE_STIR_END) {
+      // The pop just went off. He only stirs — a twitch and a breath in.
+      const k = t / WAKE_STIR_END;
+      m.headNod(pose, 0.08 * Math.sin(k * Math.PI * 2));
+      m.bellyPush(pose, 0.02 * Math.sin(k * Math.PI));
+    } else if (t < WAKE_RISE_END) {
+      const k = (t - WAKE_STIR_END) / (WAKE_RISE_END - WAKE_STIR_END);
       const eased = 1 - Math.pow(1 - k, 2.3);
       // His head lolls back at first, then catches up with his body.
       m.headNod(pose, 0.22 * Math.sin(k * Math.PI));
@@ -474,8 +494,11 @@ export async function loadSnorlax(): Promise<Snorlax> {
       if (wakeTime >= 0) {
         wakeTime += dt;
         const t = wakeTime;
-        if (t < WAKE_RISE_END) {
-          const k = t / WAKE_RISE_END;
+        if (t < WAKE_STIR_END) {
+          // Still flat out: the bubble has popped but he has not moved yet.
+          upright = 0;
+        } else if (t < WAKE_RISE_END) {
+          const k = (t - WAKE_STIR_END) / (WAKE_RISE_END - WAKE_STIR_END);
           const eased = 1 - Math.pow(1 - k, 2.3);
           // A touch of overshoot so he rocks up rather than gliding.
           upright = POSE_CONFIG.maxUpright * Math.min(1, eased * (1 + 0.06 * Math.sin(k * Math.PI)));
@@ -492,7 +515,7 @@ export async function loadSnorlax(): Promise<Snorlax> {
           upright = 0;
         }
         // Inflate somewhere inside the wake, per the chosen timing and feel.
-        const window = growthWindow(growthSettings.when);
+        const window = growthWindow(growthSettings.when, WAKE_TIMELINE);
         if (t >= window.start && growthTarget !== growthFrom) {
           const k = Math.min(1, (t - window.start) / window.duration);
           growthCurrent = growthFrom + (growthTarget - growthFrom) * growthCurve(growthSettings.feel, k);
