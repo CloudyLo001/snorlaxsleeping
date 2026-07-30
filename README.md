@@ -2,6 +2,8 @@
 
 A calm, interactive 3D scene: Snorlax naps in a sunny meadow, and you can poke him.
 
+**Live: https://sleeping-snorlax.vercel.app**
+
 - **Poke him** — click or tap. He dents where you touch, a fluid ripple travels
   across his body, and he reacts: a twitch, a sleepy head shake, a foot kick, an
   arm swat, a tummy rub, or a full-body grumble. Reactions escalate the more you
@@ -67,6 +69,10 @@ Generated with [Mint](https://mint.gg) and tracked in `mint-assets.json`.
 
 The model is committed to the repo. The grassland is a `remote_stream` record —
 its RAD splat and collider load from Mint's CDN at runtime and are not vendored.
+
+The deployed build ships source only, with no binaries, so the model 404s there
+and falls back to its durable Mint CDN mirror (see `CDN_MIRRORS` in
+`src/assets.ts`). Local clones still use the committed copy.
 
 Snorlax is a Pokémon character owned by Nintendo / Creatures Inc. / GAME FREAK.
 This is a personal, non-commercial project.

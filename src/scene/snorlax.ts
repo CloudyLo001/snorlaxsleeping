@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { createMintGltfLoader } from "../loaders";
-import { localArtifactUrl } from "../assets";
+import { artifactMirrorUrl, localArtifactUrl } from "../assets";
 import {
   BONE,
   BONE_COUNT,
@@ -143,7 +143,16 @@ function injectDeformation(material: THREE.Material, state: ShaderState) {
 
 export async function loadSnorlax(): Promise<Snorlax> {
   const profile = SNORLAX_PROFILE;
-  const gltf = await createMintGltfLoader().loadAsync(localArtifactUrl(profile.assetKey, "original_glb"));
+  const loader = createMintGltfLoader();
+  let gltf;
+  try {
+    gltf = await loader.loadAsync(localArtifactUrl(profile.assetKey, "original_glb"));
+  } catch (error) {
+    // Hosts that ship source only have no local binary; fall back to the CDN.
+    const mirror = artifactMirrorUrl(profile.assetKey, "original_glb");
+    if (!mirror) throw error;
+    gltf = await loader.loadAsync(mirror);
+  }
   const model = gltf.scene;
 
   let found: THREE.Mesh | null = null;
