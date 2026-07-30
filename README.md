@@ -5,9 +5,12 @@ A calm, interactive 3D scene: Snorlax naps in a sunny meadow, and you can poke h
 **Live:** https://cloudylo001.github.io/snorlaxsleeping/ (GitHub Pages) · https://sleeping-snorlax.vercel.app (Vercel)
 
 - **Poke him** — click or tap. He dents where you touch, a fluid ripple travels
-  across his body, and he reacts: a twitch, a sleepy head shake, a foot kick, an
-  arm swat, a tummy rub, or a full-body grumble. Reactions escalate the more you
-  pester him, and a small meter shows how bothered he is.
+  across his body, and he fidgets: a twitch, a foot flick, a sleepy head shake,
+  restless leg shuffling, an uncomfortable squirm, an arm swat, a long stretch,
+  burying his face away from you, a shiver, a tummy rub, a grumble, or heaving
+  his whole body over to turn his back on you. Fourteen in all. They escalate
+  the more you pester him, never repeat back to back, and a small meter shows
+  how bothered he is.
 - **Wake him** — poke rapidly for about six seconds. The snore bubble bursts
   first and he lies still for a beat, then heaves upright, blinks around
   groggily, rubs an eye, and flops back down with a heavy landing, a dust burst

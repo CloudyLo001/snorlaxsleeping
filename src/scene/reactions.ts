@@ -65,6 +65,14 @@ export interface RigMotions {
   bellyPush(pose: Pose, amount: number): void;
   /** Slide his belly sideways. */
   bellyShift(pose: Pose, amount: number): void;
+  /** Roll his upper body about his head-to-toe axis, as in squirming. */
+  torsoTwist(pose: Pose, amount: number): void;
+  /** Shove his whole body sideways along the ground. */
+  torsoShift(pose: Pose, amount: number): void;
+  /** Swing a leg out away from the other, or back in. */
+  legSplay(pose: Pose, side: number, amount: number): void;
+  /** Twist a foot on its own, without moving the leg. */
+  footCurl(pose: Pose, side: number, amount: number): void;
 }
 
 const TAU = Math.PI * 2;
@@ -175,18 +183,152 @@ const grumble: Reaction = {
   },
 };
 
-export const REACTIONS: Reaction[] = [twitch, headShake, footKick, armSwat, tummyRub, grumble];
+/** One foot twitches on its own, the way a sleeping animal's does. */
+const footTwitch: Reaction = {
+  name: "footTwitch",
+  duration: 0.85,
+  minAnnoyance: 0,
+  apply(t, amp, side, pose, m) {
+    const env = Math.exp(-4 * t) * smoothstep(t, 0, 0.04);
+    m.legKick(pose, side, amp * 0.24 * Math.sin(TAU * 9 * t) * env);
+    m.footCurl(pose, side, amp * 0.18 * Math.sin(TAU * 7 * t + 0.5) * env);
+  },
+};
+
+/** Restless shuffling, both legs paddling out of step with each other. */
+const legShuffle: Reaction = {
+  name: "legShuffle",
+  duration: 1.7,
+  minAnnoyance: 0.12,
+  apply(t, amp, _side, pose, m) {
+    const env = bell(t, this.duration);
+    const beat = TAU * 1.6 * t;
+    m.legKick(pose, -1, amp * 0.36 * Math.sin(beat) * env);
+    m.legKick(pose, 1, amp * 0.36 * Math.sin(beat + Math.PI) * env);
+    m.legSplay(pose, -1, amp * 0.20 * Math.sin(beat + 0.7) * env);
+    m.legSplay(pose, 1, amp * 0.20 * Math.sin(beat + Math.PI + 0.7) * env);
+    m.footCurl(pose, -1, amp * 0.12 * Math.sin(beat * 1.5) * env);
+  },
+};
+
+/** Rolls uncomfortably from side to side, trying to settle again. */
+const squirm: Reaction = {
+  name: "squirm",
+  duration: 2.0,
+  minAnnoyance: 0.22,
+  apply(t, amp, _side, pose, m) {
+    const env = bell(t, this.duration);
+    const roll = TAU * 0.9 * t;
+    m.torsoTwist(pose, amp * 0.24 * Math.sin(roll) * env);
+    m.torsoShift(pose, amp * 0.022 * Math.sin(roll + 0.4) * env);
+    // His head lags behind the roll, as dead weight would.
+    m.headYaw(pose, -amp * 0.15 * Math.sin(roll - 0.5) * env);
+    m.bellyPush(pose, amp * 0.014 * Math.sin(roll * 2) * env);
+  },
+};
+
+/** Stretches out the arm and leg on one side, then lets them drop. */
+const armStretch: Reaction = {
+  name: "armStretch",
+  duration: 1.9,
+  minAnnoyance: 0.3,
+  apply(t, amp, side, pose, m) {
+    const reach = smoothstep(t, 0, 0.35 * this.duration) * (1 - smoothstep(t, 0.6 * this.duration, this.duration));
+    m.armLift(pose, side, -amp * 0.72 * reach);
+    m.armSweep(pose, side, amp * 0.45 * reach);
+    m.legKick(pose, side, amp * 0.28 * reach);
+    m.headTilt(pose, -side * amp * 0.12 * reach);
+  },
+};
+
+/** Turns his face away and presses it down, hiding from the poking. */
+const headBurrow: Reaction = {
+  name: "headBurrow",
+  duration: 1.6,
+  minAnnoyance: 0.3,
+  apply(t, amp, side, pose, m) {
+    const push = smoothstep(t, 0, 0.3 * this.duration) * (1 - smoothstep(t, 0.55 * this.duration, this.duration));
+    m.headYaw(pose, -side * amp * 0.45 * push);
+    m.headNod(pose, amp * 0.32 * push);
+    m.headTilt(pose, side * amp * 0.18 * push);
+    m.armLift(pose, -side, amp * 0.3 * push);
+  },
+};
+
+/** A quick shiver runs through all of him at once. */
+const shiver: Reaction = {
+  name: "shiver",
+  duration: 0.95,
+  minAnnoyance: 0.4,
+  apply(t, amp, _side, pose, m) {
+    const env = bell(t, this.duration);
+    const fast = Math.sin(TAU * 14 * t);
+    const offbeat = Math.sin(TAU * 14 * t + 1.1);
+    m.torsoTwist(pose, amp * 0.09 * fast * env);
+    m.headNod(pose, amp * 0.13 * fast * env);
+    m.legKick(pose, -1, amp * 0.20 * fast * env);
+    m.legKick(pose, 1, amp * 0.20 * offbeat * env);
+    m.armLift(pose, -1, amp * 0.16 * fast * env);
+    m.armLift(pose, 1, amp * 0.16 * offbeat * env);
+    m.bellyPush(pose, amp * 0.014 * fast * env);
+  },
+};
+
+/** A full four-limb stretch, the big luxurious kind, then everything flops. */
+const bigStretch: Reaction = {
+  name: "bigStretch",
+  duration: 2.7,
+  minAnnoyance: 0.5,
+  apply(t, amp, _side, pose, m) {
+    const reach = smoothstep(t, 0, 0.4 * this.duration) * (1 - smoothstep(t, 0.55 * this.duration, this.duration));
+    m.armLift(pose, -1, -amp * 0.78 * reach);
+    m.armLift(pose, 1, -amp * 0.78 * reach);
+    m.legKick(pose, -1, amp * 0.52 * reach);
+    m.legKick(pose, 1, amp * 0.52 * reach);
+    m.legSplay(pose, -1, amp * 0.26 * reach);
+    m.legSplay(pose, 1, amp * 0.26 * reach);
+    m.headNod(pose, -amp * 0.3 * reach);
+    m.bellyPush(pose, amp * 0.032 * reach);
+  },
+};
+
+/** Heaves his whole body over, away from whoever keeps poking him. */
+const rollAway: Reaction = {
+  name: "rollAway",
+  duration: 2.3,
+  minAnnoyance: 0.6,
+  apply(t, amp, side, pose, m) {
+    const turn = smoothstep(t, 0, 0.4 * this.duration) * (1 - smoothstep(t, 0.65 * this.duration, this.duration));
+    m.torsoTwist(pose, -side * amp * 0.42 * turn);
+    m.torsoShift(pose, -side * amp * 0.03 * turn);
+    m.headYaw(pose, -side * amp * 0.38 * turn);
+    m.armSweep(pose, side, amp * 0.32 * turn);
+    m.legSplay(pose, -side, amp * 0.22 * turn);
+  },
+};
+
+export const REACTIONS: Reaction[] = [
+  twitch, headShake, footKick, armSwat, tummyRub, grumble,
+  footTwitch, legShuffle, squirm, armStretch, headBurrow, shiver, bigStretch, rollAway,
+];
+
+/** How many recent reactions to avoid repeating. */
+export const REACTION_MEMORY = 4;
 
 /**
- * Picks a reaction appropriate to how bothered Snorlax currently is, avoiding
- * an immediate repeat so escalation reads as variety rather than a loop.
+ * Picks a reaction suited to how bothered Snorlax currently is, avoiding the
+ * handful he just did so a long poking session keeps producing new behaviour
+ * rather than cycling through the same two or three.
  */
-export function pickReaction(annoyance: number, previous: Reaction | null): Reaction {
+export function pickReaction(annoyance: number, recent: readonly Reaction[]): Reaction {
   const eligible = REACTIONS.filter((r) => annoyance >= r.minAnnoyance);
   const pool = eligible.length > 0 ? eligible : [twitch];
+  // Once he is properly bothered, mostly stop offering the mildest reactions.
   const weighted = pool.filter((r) => annoyance < 0.35 || r.minAnnoyance > 0 || Math.random() < 0.4);
   const choices = weighted.length > 0 ? weighted : pool;
-  const fresh = choices.filter((r) => r !== previous);
-  const final = fresh.length > 0 ? fresh : choices;
-  return final[Math.floor(Math.random() * final.length)];
+  // Never let the memory empty the pool: fall back to the least recent.
+  const fresh = choices.filter((r) => !recent.includes(r));
+  const final = fresh.length > 0 ? fresh : choices.filter((r) => r !== recent[recent.length - 1]);
+  const usable = final.length > 0 ? final : choices;
+  return usable[Math.floor(Math.random() * usable.length)];
 }

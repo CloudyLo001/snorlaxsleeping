@@ -6,6 +6,7 @@ import {
   BONE_COUNT,
   createPose,
   pickReaction,
+  REACTION_MEMORY,
   resetPose,
   type Pose,
   type Reaction,
@@ -372,7 +373,8 @@ export async function loadSnorlax(): Promise<Snorlax> {
   let reactionTime = 0;
   let reactionAmp = 1;
   let reactionSide = 1;
-  let lastReaction: Reaction | null = null;
+  /** The last few reactions played, so the picker can avoid repeating them. */
+  const recentReactions: Reaction[] = [];
   let wakeTime = -1;
 
   let growthSettings: GrowthSettings = { ...DEFAULT_GROWTH };
@@ -478,8 +480,9 @@ export async function loadSnorlax(): Promise<Snorlax> {
       }
       // Reactions grow bigger and more varied as annoyance climbs.
       if (!activeReaction || reactionTime > activeReaction.duration * 0.55) {
-        activeReaction = pickReaction(annoyance, lastReaction);
-        lastReaction = activeReaction;
+        activeReaction = pickReaction(annoyance, recentReactions);
+        recentReactions.push(activeReaction);
+        if (recentReactions.length > REACTION_MEMORY) recentReactions.shift();
         reactionTime = 0;
         reactionAmp = 0.45 + annoyance * 0.85;
         reactionSide = localPoint.x < 0 ? -1 : 1;

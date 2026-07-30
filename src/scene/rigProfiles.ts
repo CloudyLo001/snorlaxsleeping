@@ -68,6 +68,12 @@ export const SNORLAX_PROFILE: RigProfile = {
     legKick: (p, side, a) => { p[side < 0 ? BONE.FOOT_L : BONE.FOOT_R].rx += a; },
     bellyPush: (p, a) => { p[BONE.BELLY].tz += a; },
     bellyShift: (p, a) => { p[BONE.BELLY].tx += a; },
+    // His head-to-toe axis is local Y, so rolling about it is a Y rotation.
+    torsoTwist: (p, a) => { p[BONE.TORSO].ry += a; },
+    torsoShift: (p, a) => { p[BONE.TORSO].tx += a; },
+    // Legs hang along -Y; rotating about Z swings them apart sideways.
+    legSplay: (p, side, a) => { p[side < 0 ? BONE.FOOT_L : BONE.FOOT_R].rz += -side * a; },
+    footCurl: (p, side, a) => { p[side < 0 ? BONE.FOOT_L : BONE.FOOT_R].ry += a; },
   },
 };
 
