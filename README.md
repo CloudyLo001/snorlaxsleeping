@@ -2,7 +2,7 @@
 
 A calm, interactive 3D scene: Snorlax naps in a sunny meadow, and you can poke him.
 
-**Live: https://sleeping-snorlax.vercel.app**
+**Live:** https://cloudylo001.github.io/snorlaxsleeping/ (GitHub Pages) · https://sleeping-snorlax.vercel.app (Vercel)
 
 - **Poke him** — click or tap. He dents where you touch, a fluid ripple travels
   across his body, and he reacts: a twitch, a sleepy head shake, a foot kick, an
@@ -70,9 +70,14 @@ Generated with [Mint](https://mint.gg) and tracked in `mint-assets.json`.
 The model is committed to the repo. The grassland is a `remote_stream` record —
 its RAD splat and collider load from Mint's CDN at runtime and are not vendored.
 
-The deployed build ships source only, with no binaries, so the model 404s there
-and falls back to its durable Mint CDN mirror (see `CDN_MIRRORS` in
-`src/assets.ts`). Local clones still use the committed copy.
+GitHub Pages serves the committed model directly. The Vercel deployment ships
+source only, with no binaries, so the model 404s there and falls back to its
+durable Mint CDN mirror (see `CDN_MIRRORS` in `src/assets.ts`).
+
+Pages serves the site from `/snorlaxsleeping/` rather than a domain root, so
+`vite.config.ts` sets `base` from the `GITHUB_PAGES` env var and
+`localArtifactUrl` prefixes `import.meta.env.BASE_URL`. Runtime-built asset URLs
+are not rewritten by the bundler, so they have to honour the base themselves.
 
 Snorlax is a Pokémon character owned by Nintendo / Creatures Inc. / GAME FREAK.
 This is a personal, non-commercial project.

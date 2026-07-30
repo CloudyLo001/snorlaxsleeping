@@ -32,13 +32,19 @@ export function artifactMirrorUrl(assetKey: string, artifactId: string): string 
   return CDN_MIRRORS[`${assetKey}/${artifactId}`];
 }
 
-/** Convert a registry `public/...` path into the Vite-served browser URL. */
+/**
+ * Convert a registry `public/...` path into the browser URL.
+ *
+ * This is built at runtime, so Vite cannot rewrite it the way it rewrites
+ * imported assets — it has to honour BASE_URL itself, or the app breaks when
+ * served from a subpath such as GitHub Pages rather than a domain root.
+ */
 export function localArtifactUrl(assetKey: string, artifactId: string): string {
   const artifact = assets[assetKey]?.artifacts[artifactId];
   if (!artifact?.localPath) {
     throw new Error(`Missing local artifact ${assetKey}/${artifactId} in mint-assets.json`);
   }
-  return `/${artifact.localPath.replace(/^public\//, "")}`;
+  return `${import.meta.env.BASE_URL}${artifact.localPath.replace(/^public\//, "")}`;
 }
 
 /**
