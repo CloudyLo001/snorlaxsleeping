@@ -42,10 +42,8 @@ export function createPokeSystem(options: {
   scene: THREE.Scene;
   snorlax: Snorlax;
   bubble: SnoreBubble;
-  /** World size of one "Zzz", so particles match how big Snorlax is. */
-  particleSize: number;
 }): PokeSystem {
-  const { dom, camera, scene, snorlax, bubble, particleSize } = options;
+  const { dom, camera, scene, snorlax, bubble } = options;
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   const zzzTexture = makeZzzTexture();
@@ -69,6 +67,9 @@ export function createPokeSystem(options: {
   }
 
   function spawnZzz(origin: THREE.Vector3, count: number) {
+    // Read his size at spawn time: he grows with every waking, and the sprites
+    // have to keep pace or they shrink into specks beside him.
+    const particleSize = snorlax.sitHeight * 0.11;
     for (let i = 0; i < count; i += 1) {
       const material = new THREE.SpriteMaterial({
         map: zzzTexture,
@@ -135,6 +136,7 @@ export function createPokeSystem(options: {
         dom.style.cursor = hitsSnorlax() ? "pointer" : "default";
       }
 
+      const rise = snorlax.sitHeight * 0.0275;
       for (let i = particles.length - 1; i >= 0; i -= 1) {
         const particle = particles[i];
         particle.age += dt;
@@ -145,7 +147,7 @@ export function createPokeSystem(options: {
           particles.splice(i, 1);
           continue;
         }
-        particle.velocity.y += 0.25 * particleSize * dt;
+        particle.velocity.y += rise * dt;
         particle.sprite.position.addScaledVector(particle.velocity, dt);
         particle.sprite.material.opacity = 0.95 * (1 - t * t);
         particle.sprite.material.rotation = Math.sin(particle.age * 3 + i) * 0.3;

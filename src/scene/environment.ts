@@ -25,8 +25,16 @@ export interface Environment {
 
 /** Everything is sized against Snorlax, who is ~13.6 units across. */
 const GROUND_RADIUS = 460;
-/** Inside this radius the ground is dead level, so Snorlax lies flat. */
+/**
+ * Where props start. Kept tight so grass and trees still hug him.
+ */
 const CLEARING_RADIUS = 34;
+/**
+ * Where the ground stops being dead level. Much wider than the prop clearing,
+ * because Snorlax grows with every waking and needs level ground under his
+ * whole footprint. Flat versus gently rolling is imperceptible this far out.
+ */
+const FLAT_RADIUS = 90;
 const HILLS_FADE = 90;
 
 const PALETTE = {
@@ -56,7 +64,7 @@ export function terrainHeight(x: number, z: number): number {
     Math.sin(x * 0.023 + 1.7) * Math.cos(z * 0.019 + 0.6) * 4.5 +
     Math.sin((x + z) * 0.007 + 2.3) * 6;
   // Ease the hills in beyond the clearing so there is no crease at the edge.
-  const t = THREE.MathUtils.clamp((distance - CLEARING_RADIUS) / HILLS_FADE, 0, 1);
+  const t = THREE.MathUtils.clamp((distance - FLAT_RADIUS) / HILLS_FADE, 0, 1);
   return rolling * (t * t * (3 - 2 * t));
 }
 

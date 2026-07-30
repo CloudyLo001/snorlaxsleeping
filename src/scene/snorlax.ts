@@ -12,6 +12,13 @@ import {
   type RigMotions,
 } from "./reactions";
 import { POSE_CONFIG, SNORLAX_PROFILE } from "./rigProfiles";
+import {
+  DEFAULT_GROWTH,
+  GROWTH_PER_WAKE,
+  growthCurve,
+  growthWindow,
+  type GrowthSettings,
+} from "./growth";
 
 export interface Snorlax {
   root: THREE.Group;
@@ -19,12 +26,17 @@ export interface Snorlax {
   pokeTarget: THREE.Object3D;
   /** Tracks his mouth; the snore bubble rides here. */
   bubbleAnchor: THREE.Object3D;
+  /** All three grow with him, so whatever reads them stays in proportion. */
   readonly sitHeight: number;
   readonly restHeight: number;
   readonly restFootprint: { width: number; depth: number };
+  /** Current size multiplier; 1 at load, ×1.2 per wake, reset on refresh. */
+  readonly growth: number;
   readonly breathPhase: number;
   readonly annoyance: number;
   readonly isWaking: boolean;
+  /** Applies live — never reloads the model or resets his size. */
+  setGrowthSettings(settings: GrowthSettings): void;
   onWake?: () => void;
   onImpact?: () => void;
   poke(worldPoint: THREE.Vector3, worldDirection: THREE.Vector3): void;
@@ -275,8 +287,13 @@ export async function loadSnorlax(): Promise<Snorlax> {
   centerGroup.add(wobbleGroup);
   const squashGroup = new THREE.Group();
   squashGroup.add(centerGroup);
+  // Growth sits *below* groundGroup on purpose: the re-planting below writes a
+  // world-space delta into groundGroup.position, which is only correct while
+  // nothing above it is scaled.
+  const growthGroup = new THREE.Group();
+  growthGroup.add(squashGroup);
   const groundGroup = new THREE.Group();
-  groundGroup.add(squashGroup);
+  groundGroup.add(growthGroup);
   const root = new THREE.Group();
   root.add(groundGroup);
 
@@ -343,6 +360,11 @@ export async function loadSnorlax(): Promise<Snorlax> {
   let lastReaction: Reaction | null = null;
   let wakeTime = -1;
 
+  let growthSettings: GrowthSettings = { ...DEFAULT_GROWTH };
+  let growthCurrent = 1;
+  let growthFrom = 1;
+  let growthTarget = 1;
+
   /** Authored wake gestures, written semantically. */
   function applyWakeGestures(m: RigMotions) {
     if (wakeTime < 0) return;
@@ -383,9 +405,24 @@ export async function loadSnorlax(): Promise<Snorlax> {
     root,
     pokeTarget: wobbleGroup,
     bubbleAnchor,
-    sitHeight,
-    restHeight,
-    restFootprint,
+    get sitHeight() {
+      return sitHeight * growthCurrent;
+    },
+    get restHeight() {
+      return restHeight * growthCurrent;
+    },
+    get restFootprint() {
+      return {
+        width: restFootprint.width * growthCurrent,
+        depth: restFootprint.depth * growthCurrent,
+      };
+    },
+    get growth() {
+      return growthCurrent;
+    },
+    setGrowthSettings(settings) {
+      growthSettings = { ...settings };
+    },
     get breathPhase() {
       return breathPhase;
     },
@@ -413,6 +450,9 @@ export async function loadSnorlax(): Promise<Snorlax> {
       if (annoyance >= 1) {
         wakeTime = 0;
         activeReaction = null;
+        // Every waking leaves him permanently bigger.
+        growthFrom = growthCurrent;
+        growthTarget = growthCurrent * GROWTH_PER_WAKE;
         api.onWake?.();
         return;
       }
@@ -451,10 +491,21 @@ export async function loadSnorlax(): Promise<Snorlax> {
           }
           upright = 0;
         }
+        // Inflate somewhere inside the wake, per the chosen timing and feel.
+        const window = growthWindow(growthSettings.when);
+        if (t >= window.start && growthTarget !== growthFrom) {
+          const k = Math.min(1, (t - window.start) / window.duration);
+          growthCurrent = growthFrom + (growthTarget - growthFrom) * growthCurve(growthSettings.feel, k);
+        }
+
         if (t >= WAKE_TOTAL) {
           wakeTime = -1;
           annoyance = 0;
           upright = 0;
+          // Land exactly on the target even if the window was cut short by a
+          // settings change mid-wake.
+          growthCurrent = growthTarget;
+          growthFrom = growthTarget;
         }
       } else {
         annoyance = Math.max(0, annoyance - ANNOY_DECAY * dt);
@@ -491,6 +542,7 @@ export async function loadSnorlax(): Promise<Snorlax> {
       centerGroup.position.z = sculptHeight * 0.5 * down;
 
       breathGroup.scale.setScalar(1 + breath * 0.008);
+      growthGroup.scale.setScalar(growthCurrent);
 
       const stiffness = 34;
       const damping = 5.5;

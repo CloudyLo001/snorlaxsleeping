@@ -79,3 +79,115 @@ body {
   background: hsl(205, 70%, 62%);
   transition: width 0.12s linear, background 0.25s ease;
 }
+
+.size-pill {
+  pointer-events: none;
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #4a5568;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 12px rgba(90, 120, 150, 0.18);
+  transition: opacity 0.4s ease;
+  user-select: none;
+}
+
+.size-pill.hidden {
+  opacity: 0;
+}
+
+.settings {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.settings-toggle {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  color: #4a5568;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 12px rgba(90, 120, 150, 0.2);
+  align-self: flex-end;
+}
+
+.settings-toggle:hover {
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.settings-panel {
+  width: 244px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  color: #4a5568;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 20px rgba(90, 120, 150, 0.24);
+  transition: opacity 0.2s ease;
+}
+
+.settings-panel.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.settings-group + .settings-group {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(120, 150, 175, 0.22);
+}
+
+.settings-heading {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 6px;
+}
+
+.settings-option {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  padding: 6px;
+  border-radius: 9px;
+  cursor: pointer;
+}
+
+.settings-option:hover {
+  background: rgba(160, 195, 220, 0.18);
+}
+
+.settings-option input {
+  margin-top: 3px;
+  accent-color: #6f9fd8;
+  flex: none;
+}
+
+.settings-option strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.settings-option small {
+  display: block;
+  font-size: 11px;
+  line-height: 1.35;
+  opacity: 0.7;
+  margin-top: 2px;
+}

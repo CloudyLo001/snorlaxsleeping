@@ -11,6 +11,10 @@ A calm, interactive 3D scene: Snorlax naps in a sunny meadow, and you can poke h
 - **Wake him** — poke rapidly for about six seconds. He sits up, blinks around
   groggily, rubs an eye, then flops back down with a dust burst and a leg kick.
   Poking slowly never wakes him; the meter drains faster than it fills.
+- **He grows** — every waking leaves him permanently 20% bigger, with a visible
+  balloon-like inflation, and he stays that size when he goes back to sleep.
+  There is no cap. A refresh returns him to his original size. The gear button
+  switches when the inflation plays and how it feels.
 - **Snore bubble** — grows out of his mouth on the exhale, trembles as he gets
   annoyed, and pops when he wakes.
 - **Look around** — drag to orbit, scroll to zoom. The camera stays locked on
@@ -39,6 +43,14 @@ animation clips. Every motion is procedural instead:
   motions (`headYaw`, `armLift`, `legKick`) rather than naming rotation axes,
   because the model is sculpted **sitting** and is tipped 90° while asleep — so
   turning his head is a Z rotation, not the Y you would expect.
+
+Growth is a uniform scale, not a second model — the poke dent, bone deformation
+and snore bubble all sit inside his transform, so they scale for free. The scale
+group deliberately sits *below* `groundGroup`, because the ground re-planting
+writes a world-space delta into a local position and would be wrong by the scale
+factor otherwise. `sitHeight`, `restHeight` and `restFootprint` are getters that
+track his current size, which is how the camera, dust burst and Zzz particles
+stay in proportion.
 
 A single `upright` value (0 = flopped out asleep, 1 = sitting) drives posture.
 Lying down is a deformation of the sculpted sitting pose: tipped onto his back,
