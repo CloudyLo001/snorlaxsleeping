@@ -47,16 +47,23 @@ ground by amounts that vary per pose, `replantOnGround` re-measures his true
 lowest point every frame and plants it on the ground rather than relying on
 fixed offsets.
 
-The grassland is a Gaussian-splat world streamed through SparkJS. Splats cannot
-receive shadows, so a soft painted contact shadow keeps Snorlax visually planted.
+The landscape in `src/scene/environment.ts` is hand-built geometry: rolling
+hills, conifers and broadleaf trees, boulders, tall grass, flower patches, a
+distant mountain ring and drifting clouds. Terrain height comes from an analytic
+function, so the same call grounds Snorlax, trees, rocks and grass with no
+raycasting, and the middle is dead level so he always lies flat.
 
-Two details in `world.ts` matter. The shared splat-and-collider root is scaled
-well past Mint's default calibration, because that default assumes a camera
-about 6 units out; Snorlax is 13.6 units wide, so the camera has to sit ~23
-units back, and near the edge of a captured region splats stretch into smeared
-artifacts. Scaling the root moves that edge outward so the camera sits at ~40%
-of the captured ground radius. The world then slides itself so its flattest
-patch ends up under the origin, since Snorlax always lies there.
+This replaced a Gaussian-splat world. Splats smear badly once the camera leaves
+the captured region, and the camera has to sit well back because Snorlax is
+large — so the environment was visibly distorted. Geometry has no such limit,
+reads clean from every angle, casts real shadows, and cut the bundle from
+5.6 MB to 0.6 MB by dropping the splat runtime.
+
+Two performance notes worth keeping. Every repeated prop is one merged geometry
+drawn as an InstancedMesh, so the whole landscape is ~10 draw calls and 8 shader
+programs rather than one per branch. And only Snorlax casts shadows: an
+InstancedMesh is frustum-culled as a single object, so letting trees cast would
+drag every distant tree into the shadow pass.
 
 ## Assets
 
@@ -65,14 +72,13 @@ Generated with [Mint](https://mint.gg) and tracked in `mint-assets.json`.
 | Asset | Registry key | Source |
 | --- | --- | --- |
 | Pastel Belly Snorlax | `snorlax` | [Mint chat](https://mint.gg/chat/ph7epk8xbemdear33wjn9g1kx18bfpdj) |
-| Open Grassland Horizon | `meadow` | [Mint chat](https://mint.gg/chat/ph7860z21kqbptsy6mx9gjg3wh8be1r7) |
 
 The model is committed to the repo. The grassland is a `remote_stream` record —
 its RAD splat and collider load from Mint's CDN at runtime and are not vendored.
 
-GitHub Pages serves the committed model directly. The Vercel deployment ships
-source only, with no binaries, so the model 404s there and falls back to its
-durable Mint CDN mirror (see `CDN_MIRRORS` in `src/assets.ts`).
+The Snorlax model is the only generated asset. GitHub Pages serves the committed
+copy directly; the Vercel deployment ships source only, so it 404s there and
+falls back to a durable Mint CDN mirror (see `CDN_MIRRORS` in `src/assets.ts`).
 
 Pages serves the site from `/snorlaxsleeping/` rather than a domain root, so
 `vite.config.ts` sets `base` from the `GITHUB_PAGES` env var and

@@ -61,7 +61,15 @@ interface ShaderState {
   pokeRadius: number;
 }
 
-function injectDeformation(material: THREE.Material, state: ShaderState) {
+/**
+ * Applies the bone deformation and poke dent in the vertex shader.
+ *
+ * `withNormals` is off for the depth material used to cast shadows: that
+ * shader has no objectNormal to work with. Without this the shadow would be
+ * cast from the undeformed mesh, so a sleeping Snorlax would throw a sitting
+ * Snorlax's shadow.
+ */
+function injectDeformation(material: THREE.Material, state: ShaderState, withNormals = true) {
   material.onBeforeCompile = (shader) => {
     shader.uniforms.uTime = state.time;
     shader.uniforms.uBones = { value: state.bones };
@@ -109,10 +117,12 @@ function injectDeformation(material: THREE.Material, state: ShaderState) {
       )
       .replace(
         "#include <beginnormal_vertex>",
-        /* glsl */ `
+        withNormals
+          ? /* glsl */ `
         #include <beginnormal_vertex>
         objectNormal = mintBoneNormal(objectNormal);
-        `,
+        `
+          : "#include <beginnormal_vertex>",
       )
       .replace(
         "#include <begin_vertex>",
@@ -131,9 +141,11 @@ function injectDeformation(material: THREE.Material, state: ShaderState) {
           float press = exp(-pokeAge * 4.0) * smoothstep(0.0, 0.07, pokeAge);
           float dent = exp(-nd * nd * 5.5);
           transformed += pokeDir * (uPokeRadius * 0.2 * pokeStrength * press * dent);
+          ${withNormals ? /* glsl */ `
           // Fluid ripple traveling outward from the dent, like a water balloon.
           float wave = sin(9.0 * nd - 7.5 * pokeAge) * exp(-nd * 1.7) * exp(-pokeAge * 1.8);
           transformed += objectNormal * (uPokeRadius * 0.05 * pokeStrength * wave * smoothstep(0.04, 0.22, pokeAge));
+          ` : ""}
         }
         `,
       );
@@ -216,6 +228,15 @@ export async function loadSnorlax(): Promise<Snorlax> {
     material.envMapIntensity = 0.35;
   }
   injectDeformation(material, state);
+
+  // Shadows are cast from a depth material, which knows nothing about the
+  // deformation above, so give it the same treatment or the shadow keeps the
+  // sculpted sitting pose while he lies down.
+  const depthMaterial = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
+  injectDeformation(depthMaterial, state, false);
+  bodyMesh.customDepthMaterial = depthMaterial;
+  bodyMesh.castShadow = true;
+  bodyMesh.receiveShadow = true;
 
   // Scale up and rest the sculpted sitting pose on the ground plane.
   const bounds = new THREE.Box3().setFromObject(model);

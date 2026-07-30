@@ -1,8 +1,6 @@
 import * as THREE from "three";
-import { SparkRenderer } from "@sparkjsdev/spark";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { remoteWorldRuntime } from "./assets";
-import { loadMintWorld, type MintWorld } from "./scene/world";
+import { createEnvironment, type Environment } from "./scene/environment";
 import { loadSnorlax, type Snorlax } from "./scene/snorlax";
 import { createSnoreBubble, type SnoreBubble } from "./scene/snoreBubble";
 import { createGroundImpact, type GroundImpact } from "./scene/groundImpact";
@@ -12,20 +10,19 @@ import { createUi } from "./ui";
 const app = document.querySelector<HTMLDivElement>("#app")!;
 const ui = createUi(document.body);
 
-// Splat-world renderer settings: no MSAA, capped pixel ratio.
-const renderer = new THREE.WebGLRenderer({ antialias: false });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.08;
 app.append(renderer.domElement);
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color("#cfe8f7");
 
-const spark = new SparkRenderer({ renderer, enableLod: true });
-scene.add(spark);
-
-const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.05, 900);
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.5, 2000);
 camera.position.set(0, 6, 22);
 
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -39,44 +36,14 @@ controls.autoRotateSpeed = 0.2;
 // target off him, so it stays off.
 controls.enablePan = false;
 
-// The splat world carries its own baked lighting; these lights shade only the
-// Snorlax mesh with a soft warm-sun feel.
-const sun = new THREE.DirectionalLight("#fff3d6", 2.2);
-sun.position.set(14, 22, 10);
-const hemi = new THREE.HemisphereLight("#cfe6ff", "#9ec98f", 1.2);
-const ambient = new THREE.AmbientLight("#fdf6e3", 0.4);
-scene.add(sun, hemi, ambient);
+const environment: Environment = createEnvironment(scene);
+const groundY = environment.groundHeightAt(0, 0);
 
-// Soft fake contact shadow. Splats cannot receive real shadows, so this is what
-// keeps Snorlax visually planted on the grass instead of hovering over it.
-function makeContactShadow(width: number, depth: number): THREE.Mesh {
-  const canvas = document.createElement("canvas");
-  canvas.width = 256;
-  canvas.height = 256;
-  const ctx = canvas.getContext("2d")!;
-  const gradient = ctx.createRadialGradient(128, 128, 10, 128, 128, 126);
-  gradient.addColorStop(0, "rgba(34, 52, 38, 0.62)");
-  gradient.addColorStop(0.45, "rgba(34, 52, 38, 0.34)");
-  gradient.addColorStop(1, "rgba(34, 52, 38, 0)");
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, 256, 256);
-  const texture = new THREE.CanvasTexture(canvas);
-  const mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(width, depth),
-    new THREE.MeshBasicMaterial({ map: texture, transparent: true, depthWrite: false }),
-  );
-  mesh.rotation.x = -Math.PI / 2;
-  return mesh;
-}
-
-let world: MintWorld | null = null;
 let snorlax: Snorlax | null = null;
 let bubble: SnoreBubble | null = null;
 let pokeSystem: PokeSystem | null = null;
-let shadow: THREE.Mesh | null = null;
 const groundImpact: GroundImpact = createGroundImpact(scene);
 let loadFailed = false;
-let groundY = 0;
 
 function fail(message: string, error: unknown) {
   // Latch the first fatal loading error; later progress must not replace it.
@@ -90,14 +57,10 @@ async function addSnorlax() {
   ui.setStatus("Snorlax is settling in…");
   try {
     const loaded = await loadSnorlax();
-    // Nestle him into the grass rather than resting exactly on the collider
-    // plane, which reads as floating against the splat ground.
+    // Nestle him into the grass rather than resting exactly on the ground
+    // plane, which reads as hovering over it.
     loaded.root.position.set(0, groundY - loaded.restHeight * 0.07, 0);
     scene.add(loaded.root);
-
-    shadow = makeContactShadow(loaded.restFootprint.width * 1.15, loaded.restFootprint.depth * 1.15);
-    shadow.position.set(0, groundY + loaded.restHeight * 0.01, 0);
-    scene.add(shadow);
 
     snorlax = loaded;
     bubble = createSnoreBubble(loaded.bubbleAnchor, { size: loaded.sitHeight * 0.16 });
@@ -119,28 +82,14 @@ async function addSnorlax() {
     controls.minDistance = loaded.sitHeight * 0.75;
     controls.maxDistance = loaded.sitHeight * 4.5;
 
-    if (!loadFailed) {
-      ui.clearStatus();
-      ui.showHint();
-    }
+    ui.clearStatus();
+    ui.showHint();
   } catch (error) {
     fail("Snorlax could not be woken up — the model failed to load.", error);
   }
 }
 
-async function loadScene() {
-  ui.setStatus("Streaming the meadow…");
-  const worldRuntime = remoteWorldRuntime("meadow");
-  try {
-    world = worldRuntime ? await loadMintWorld(scene, worldRuntime) : null;
-    if (world) groundY = world.groundHeightAt(0, 0) ?? 0;
-  } catch (error) {
-    fail("The meadow failed to stream in.", error);
-  }
-  await addSnorlax();
-}
-
-void loadScene();
+void addSnorlax();
 
 renderer.domElement.addEventListener("pointerdown", () => {
   controls.autoRotate = false;
@@ -158,6 +107,7 @@ renderer.setAnimationLoop(() => {
   timer.update();
   const dt = Math.min(timer.getDelta(), 0.05);
 
+  environment.update(dt);
   if (snorlax) {
     snorlax.update(dt);
     bubble?.update(dt, snorlax.breathPhase, snorlax.annoyance);
