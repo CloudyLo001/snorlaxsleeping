@@ -1,6 +1,8 @@
 export interface Score {
   /** Call when a poke actually lands on him. Returns the points awarded. */
   registerPoke(): number;
+  /** Float a "+N" up from where the poke landed, in client coordinates. */
+  showGain(clientX: number, clientY: number, amount: number): void;
   update(dt: number): void;
 }
 
@@ -72,6 +74,23 @@ export function createScore(root: HTMLElement): Score {
       // pins the number at its size clamp and it stops visibly springing back.
       scaleVelocity = 8.4 + gained * 0.35;
       return gained;
+    },
+    showGain(clientX, clientY, amount) {
+      // Proves the spot you hit scored, wherever on him it was.
+      const gain = document.createElement("div");
+      gain.className = "score-gain";
+      gain.textContent = `+${amount}`;
+      gain.style.left = `${clientX}px`;
+      gain.style.top = `${clientY}px`;
+      if (amount > 1) {
+        const hue = 205 - (amount - 1) * 26;
+        gain.style.color = `hsl(${Math.max(hue, 5)}, 78%, 48%)`;
+      }
+      document.body.append(gain);
+      gain.addEventListener("animationend", () => gain.remove(), { once: true });
+      // Backstop: animations do not run in a hidden tab, so animationend may
+      // never fire and these would accumulate.
+      setTimeout(() => gain.remove(), 2000);
     },
     update(dt: number) {
       sinceLastPoke += dt;

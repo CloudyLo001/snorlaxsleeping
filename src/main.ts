@@ -140,6 +140,10 @@ async function addSnorlax() {
   ui.setStatus("Snorlax is settling in…");
   try {
     const loaded = await loadSnorlax();
+    // Sculpted facing +Z, but lying down tips that away from the camera — the
+    // default view was of the soles of his feet, with his face on the far side.
+    // Turning him puts his face, belly and arms toward the viewer.
+    loaded.root.rotation.y = Math.PI;
     loaded.root.position.set(0, groundY, 0);
     replantSnorlax(loaded);
     scene.add(loaded.root);
@@ -161,8 +165,16 @@ async function addSnorlax() {
       scene,
       snorlax: loaded,
       bubble,
-      onPoke: () => {
-        score.registerPoke();
+      onPoke: (worldPoint) => {
+        const gained = score.registerPoke();
+        // Project the hit back to the screen so the "+N" appears exactly where
+        // you touched him, wherever on his body that was.
+        const projected = worldPoint.clone().project(camera);
+        score.showGain(
+          (projected.x * 0.5 + 0.5) * window.innerWidth,
+          (-projected.y * 0.5 + 0.5) * window.innerHeight,
+          gained,
+        );
         // He has been poked, so the prompt has served its purpose.
         ui.quietHint();
       },

@@ -218,6 +218,26 @@ body {
   100% { transform: scale(1); }
 }
 
+/* Floats up from wherever the poke landed on him. */
+.score-gain {
+  position: fixed;
+  z-index: 3;
+  pointer-events: none;
+  user-select: none;
+  transform: translate(-50%, -50%);
+  font-size: 22px;
+  font-weight: 800;
+  color: #4a7fb5;
+  text-shadow: 0 1px 3px rgba(255, 255, 255, 0.9), 0 0 10px rgba(255, 255, 255, 0.6);
+  animation: score-gain-float 0.75s ease-out forwards;
+}
+
+@keyframes score-gain-float {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+  25% { opacity: 1; transform: translate(-50%, -80%) scale(1.15); }
+  100% { opacity: 0; transform: translate(-50%, -190%) scale(1); }
+}
+
 .settings-buttons {
   display: flex;
   gap: 8px;

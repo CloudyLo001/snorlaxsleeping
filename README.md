@@ -12,7 +12,9 @@ A calm, interactive 3D scene: Snorlax naps in a sunny meadow, and you can poke h
   his whole body over to turn his back on you. Fourteen in all. They escalate
   the more you pester him, never repeat back to back, and a small meter shows
   how bothered he is.
-- **Score** — every poke that lands scores, and poking fast builds a combo
+- **Score** — every poke that lands anywhere on him scores: head, belly, arms,
+  legs, feet. A "+N" floats up from the exact spot you touched. Poking the sky
+  scores nothing.  and poking fast builds a combo
   multiplier that climbs a step every three pokes up to x8, then lapses if you
   pause for a beat. The number springs about 35% larger on each poke and
   overshoots on the way back, punching harder the higher the multiplier. It
