@@ -11,6 +11,11 @@ A calm, interactive 3D scene: Snorlax naps in a sunny meadow, and you can poke h
   his whole body over to turn his back on you. Fourteen in all. They escalate
   the more you pester him, never repeat back to back, and a small meter shows
   how bothered he is.
+- **Score** — every poke that lands scores, and poking fast builds a combo
+  multiplier that climbs a step every three pokes up to x8, then lapses if you
+  pause for a beat. The number springs about 35% larger on each poke and
+  overshoots on the way back, punching harder the higher the multiplier. It
+  resets on refresh, like his size.
 - **Wake him** — poke rapidly for about six seconds. The snore bubble bursts
   first and he lies still for a beat, then heaves upright, blinks around
   groggily, rubs an eye, and flops back down with a heavy landing, a dust burst

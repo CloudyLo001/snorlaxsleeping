@@ -7,6 +7,7 @@ import { createGroundImpact, type GroundImpact } from "./scene/groundImpact";
 import { createPokeSystem, type PokeSystem } from "./interaction/poke";
 import { DEFAULT_GROWTH, type GrowthSettings } from "./scene/growth";
 import { createAudio } from "./audio";
+import { createScore } from "./score";
 import { createUi } from "./ui";
 
 const GROWTH_STORAGE_KEY = "snorlax-growth-settings";
@@ -41,6 +42,8 @@ try {
 }
 
 const audio = createAudio({ muted: startMuted });
+// Deliberately not persisted: a refresh starts a fresh run, like his size.
+const score = createScore(document.body);
 
 const ui = createUi(document.body, {
   growth: growthSettings,
@@ -156,6 +159,7 @@ async function addSnorlax() {
       scene,
       snorlax: loaded,
       bubble,
+      onPoke: () => score.registerPoke(),
     });
 
     // Frame him: he is a big creature, so back off proportionally to his size.
@@ -234,6 +238,7 @@ renderer.setAnimationLoop(() => {
     ui.setGrowth(snorlax.growth);
   }
   pokeSystem?.update(dt);
+  score.update(dt);
   groundImpact.update(dt);
   controls.update();
   renderer.render(scene, camera);

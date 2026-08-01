@@ -42,8 +42,10 @@ export function createPokeSystem(options: {
   scene: THREE.Scene;
   snorlax: Snorlax;
   bubble: SnoreBubble;
+  /** Fired only when a poke actually connects, for scoring. */
+  onPoke?: () => void;
 }): PokeSystem {
-  const { dom, camera, scene, snorlax, bubble } = options;
+  const { dom, camera, scene, snorlax, bubble, onPoke } = options;
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   const zzzTexture = makeZzzTexture();
@@ -117,6 +119,8 @@ export function createPokeSystem(options: {
     snorlax.poke(hit.point, raycaster.ray.direction);
     bubble.jostle();
     spawnZzz(hit.point, 2 + Math.round(snorlax.annoyance * 4));
+    // Only pokes that actually land on him score.
+    onPoke?.();
   }
 
   function onPointerMove(event: PointerEvent) {

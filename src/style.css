@@ -109,6 +109,66 @@ body {
   gap: 8px;
 }
 
+.score {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 22px;
+  border-radius: 16px;
+  color: #4a5568;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 14px rgba(90, 120, 150, 0.18);
+}
+
+.score-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  opacity: 0.6;
+}
+
+.score-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.score-value {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  /* The spring writes transform every frame, so no CSS transition here. */
+  transform-origin: center bottom;
+}
+
+.score-multiplier {
+  min-width: 30px;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  transition: opacity 0.12s linear;
+}
+
+.score-multiplier.bump {
+  animation: score-chip-bump 0.34s ease-out;
+}
+
+@keyframes score-chip-bump {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.45) rotate(-4deg); }
+  100% { transform: scale(1); }
+}
+
 .settings-buttons {
   display: flex;
   gap: 8px;
