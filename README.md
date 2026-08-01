@@ -4,8 +4,8 @@ A calm, interactive 3D scene: Snorlax naps in a sunny meadow, and you can poke h
 
 **Live:** https://cloudylo001.github.io/snorlaxsleeping/ (GitHub Pages) · https://sleeping-snorlax.vercel.app (Vercel)
 
-- **Poke him** — a large pulsing "Poke Snorlax" prompt invites the first
-  interaction, then shrinks to a quiet reminder once you have. Click or tap. He dents where you touch, a fluid ripple travels
+- **Poke him** — a large pulsing "Poke Snorlax" prompt sits at the top above the
+  score, and shrinks to a quiet reminder once you have poked him. Click or tap. He dents where you touch, a fluid ripple travels
   across his body, and he fidgets: a twitch, a foot flick, a sleepy head shake,
   restless leg shuffling, an uncomfortable squirm, an arm swat, a long stretch,
   burying his face away from you, a shiver, a tummy rub, a grumble, or heaving

@@ -42,8 +42,6 @@ try {
 }
 
 const audio = createAudio({ muted: startMuted });
-// Deliberately not persisted: a refresh starts a fresh run, like his size.
-const score = createScore(document.body);
 
 const ui = createUi(document.body, {
   growth: growthSettings,
@@ -68,6 +66,10 @@ const ui = createUi(document.body, {
     }
   },
 });
+
+// Mounts into the top column beneath the poke prompt. Deliberately not
+// persisted: a refresh starts a fresh run, like his size.
+const score = createScore(ui.topSlot);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));

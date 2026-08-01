@@ -10,6 +10,8 @@ export interface Ui {
   showHint(): void;
   /** Step the call to action down once it has been acted on. */
   quietHint(): void;
+  /** Top-centre column the score mounts into, beneath the prompt. */
+  topSlot: HTMLElement;
   /** Drives the little "how bothered is he" meter, 0..1. */
   setAnnoyance(value: number): void;
   /** Shows his current size once he has grown past his starting scale. */
@@ -87,7 +89,14 @@ export function createUi(
   const size = document.createElement("div");
   size.className = "size-pill hidden";
 
-  layer.append(status, meter, size, hint);
+  // The prompt and the score share one top-centre column, so the prompt always
+  // sits directly above the score rather than the two being placed separately
+  // and overlapping when the prompt wraps.
+  const topLayer = document.createElement("div");
+  topLayer.className = "top-layer";
+  topLayer.append(hint);
+
+  layer.append(status, meter, size);
 
   // Settings: how the growth animation plays.
   const current: GrowthSettings = { ...options.growth };
@@ -138,12 +147,13 @@ export function createUi(
   buttons.append(sound, toggle);
   settings.append(panel, buttons);
 
-  root.append(layer, settings);
+  root.append(topLayer, layer, settings);
 
   let meterShown = false;
   let sizeShown = false;
 
   return {
+    topSlot: topLayer,
     setStatus(message, state = "info") {
       status.textContent = message;
       status.dataset.state = state;

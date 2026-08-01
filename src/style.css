@@ -28,6 +28,21 @@ body {
   padding-bottom: 26px;
 }
 
+/* Top-centre column: the poke prompt, then the score beneath it. */
+.top-layer {
+  position: fixed;
+  top: 18px;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+}
+
 .status-pill,
 .hint-pill {
   pointer-events: none;
@@ -59,8 +74,9 @@ body {
  * have poked him it has done its job and shrinks out of the way of the view.
  */
 .hint-pill {
-  font-size: 30px;
-  font-weight: 700;
+  /* Twice the previous 30px, but clamped so it cannot overrun a phone. */
+  font-size: clamp(30px, 7.5vw, 60px);
+  font-weight: 800;
   letter-spacing: 0.01em;
   padding: 14px 34px;
   color: #3d4a5c;
@@ -76,10 +92,10 @@ body {
   50% { transform: scale(1.06); }
 }
 
-/* Poked at least once: step down to a quiet reminder. */
+/* Poked at least once: step down to a quiet reminder above the score. */
 .hint-pill.subtle {
-  font-size: 15px;
-  font-weight: 400;
+  font-size: 18px;
+  font-weight: 600;
   padding: 8px 18px;
   color: #4a5568;
   background: rgba(255, 255, 255, 0.72);
@@ -145,11 +161,8 @@ body {
   gap: 8px;
 }
 
+/* Positioned by .top-layer, which stacks it under the poke prompt. */
 .score {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
   pointer-events: none;
   user-select: none;
   display: flex;
