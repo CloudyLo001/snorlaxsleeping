@@ -159,7 +159,11 @@ async function addSnorlax() {
       scene,
       snorlax: loaded,
       bubble,
-      onPoke: () => score.registerPoke(),
+      onPoke: () => {
+        score.registerPoke();
+        // He has been poked, so the prompt has served its purpose.
+        ui.quietHint();
+      },
     });
 
     // Frame him: he is a big creature, so back off proportionally to his size.

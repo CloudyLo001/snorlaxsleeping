@@ -8,6 +8,8 @@ export interface Ui {
   setStatus(message: string, state?: "info" | "error"): void;
   clearStatus(): void;
   showHint(): void;
+  /** Step the call to action down once it has been acted on. */
+  quietHint(): void;
   /** Drives the little "how bothered is he" meter, 0..1. */
   setAnnoyance(value: number): void;
   /** Shows his current size once he has grown past his starting scale. */
@@ -152,6 +154,9 @@ export function createUi(
     },
     showHint() {
       hint.classList.remove("hidden");
+    },
+    quietHint() {
+      hint.classList.add("subtle");
     },
     setAnnoyance(value) {
       const visible = value > 0.04;
